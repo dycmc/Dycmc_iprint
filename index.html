@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>포장 Hand Print</title>
+  <style>
+    :root { --bg:#f1f4f9; --card:#ffffff; --tx:#1d2433; --sub:#6b7488; --bd:#d9dfeb; --pri:#2457d6; --pri-d:#1c46ad; --err:#c62828; }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg:#12151c; --card:#1c212c; --tx:#e8ecf4; --sub:#98a1b5; --bd:#303749; --pri:#4f80f0; --pri-d:#6a94ff; --err:#ff6b6b; }
+    }
+    html, body { margin: 0; height: 100%; background: var(--bg); color: var(--tx);
+      font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", sans-serif; }
+    #wrap { min-height: 100%; display: flex; align-items: center; justify-content: center; padding: 16px; box-sizing: border-box; }
+    .box { width: 100%; max-width: 380px; background: var(--card); border: 1px solid var(--bd); border-radius: 16px;
+      padding: 28px 24px; text-align: center; box-shadow: 0 6px 24px rgba(0,0,0,.08); }
+    h1 { margin: 0 0 8px; font-size: 22px; color: var(--pri); }
+    p { margin: 0 0 18px; font-size: 14px; color: var(--sub); line-height: 1.6; }
+    p.err { color: var(--err); }
+    a.btn { display: inline-block; padding: 12px 22px; font-size: 15px; font-weight: 700; color: #fff;
+      background: var(--pri); border-radius: 10px; text-decoration: none; }
+    a.btn:hover { background: var(--pri-d); }
+    #frameBox { display: none; position: fixed; left: 0; top: 0; width: 100%; height: 100%; border: 0; background: var(--bg); }
+  </style>
+</head>
+<body>
+
+<div id="wrap">
+  <div class="box">
+    <h1>포장 Hand Print</h1>
+    <p id="msg">앱을 여는 중입니다...</p>
+    <a id="go" class="btn" href="#">앱 바로 열기</a>
+  </div>
+</div>
+
+<iframe id="frameBox" allow="clipboard-write; clipboard-read; web-share; fullscreen"></iframe>
+
+<script>
+  /* ===================================================================
+     [설정] 아래 2개만 확인/수정하세요.
+     1) APP_URL : Apps Script [배포] > [웹 앱]의 '웹 앱 URL' (끝이 /exec)
+     2) MODE    : 'redirect' = 앱 주소로 이동 (권장, 기존 기능 100% 동일)
+                  'frame'    = 이 페이지 주소를 유지한 채 앱을 화면에 표시
+                               (Code.gs 의 doGet 에 setXFrameOptionsMode(ALLOWALL) 추가 필요)
+     =================================================================== */
+  var APP_URL = 'https://script.google.com/macros/s/AKfycbw2D3lMr0cj2fuhsV--kRODC7HzZOu2oGR17trU9xWBu4FIcwVny7-rJTB7setgpy-uMw/exec';
+  var MODE = 'redirect';
+
+  (function () {
+    var msg = document.getElementById('msg');
+    var go = document.getElementById('go');
+
+    // 주소의 ?text=... 값을 앱에 그대로 전달 (Print 탭 텍스트 상자 초기값)
+    var query = location.search || '';
+    var target = APP_URL + query;
+
+    if (APP_URL.indexOf('여기에') >= 0 || APP_URL.indexOf('/exec') < 0) {
+      msg.className = 'err';
+      msg.textContent = 'https://script.google.com/macros/s/AKfycbw2D3lMr0cj2fuhsV--kRODC7HzZOu2oGR17trU9xWBu4FIcwVny7-rJTB7setgpy-uMw/exec';
+      go.style.display = 'none';
+      return;
+    }
+
+    go.href = target;
+
+    if (MODE === 'frame') {
+      var f = document.getElementById('frameBox');
+      f.src = target;
+      f.style.display = 'block';
+      document.getElementById('wrap').style.display = 'none';
+    } else {
+      location.replace(target);
+    }
+  })();
+</script>
+</body>
+</html>
